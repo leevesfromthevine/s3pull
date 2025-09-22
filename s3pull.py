@@ -1,9 +1,10 @@
-import boto3
+import boto3, os, rasterio
+from pathlib import Path
+from rasterio.merge import merge
 from botocore import UNSIGNED
 from botocore.client import Config
 import geopandas as gpd
-from typing import Optionals
-import os
+from typing import Optional
 
 # replace '/aws/s3/bucket/' with s3 bucket
 gdf_tiles = gpd.read_file('/aws/s3/bucket/')
@@ -44,4 +45,29 @@ def download_tiles(s3, bucket, gdf_tiles_clipped, download_path):
 
     return downloaded_files
 
-download = download_tiles(s3, bucket, gdf_siles_clipped, download_path)
+download = download_tiles(s3, bucket, gdf_tiles_clipped, download_path)
+
+path = Path('./aoi_raster/')
+Path('output').mkdir(parents=True, exist_ok=True)
+output_path = 'output/mosaic_output.tif'
+
+raster_files = list(path.iterdir())
+raster_to_mosaic = []
+
+for p in raster_files:
+    raster = rasterio.open(p)
+    raster_to_mosaic.append(raster)
+
+mosaic, output = merge(raster_to_mosaic)
+output_meta = raster.meta.copy()
+output_meta.update(
+    {"driver": "GTiff",
+        "height": mosaic.shape[1],
+        "width": mosaic.shape[2],
+        "transform": output,
+    }
+)
+
+with rasterio.open(output_path, "w", **output_meta) as m:
+    m.write(mosaic)
+
