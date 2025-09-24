@@ -4,7 +4,6 @@ from rasterio.merge import merge
 from botocore import UNSIGNED
 from botocore.client import Config
 import geopandas as gpd
-from typing import Optional
 
 # replace '/aws/s3/bucket/' with s3 bucket
 gdf_tiles = gpd.read_file('/aws/s3/bucket/')
@@ -13,7 +12,6 @@ gdf_tiles = gdf_tiles.to_crs(crs=3857)
 # replace './aoi_shp/...' with area of interest
 aoi_shp = './aoi_shp/...'
 gdf_aoi = gpd.read_file(aoi_shp)
-
 def clip_tiles_to_aoi(gdf_tiles, gdf_aoi):
     gdf_tiles_clipped = gpd.clip(gdf_tiles, gdf_aoi)
     return gdf_tiles_clipped

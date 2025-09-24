@@ -4,9 +4,5 @@ s3 buckets can be found in constants.py in Ian Horn's example project.
 
 Before using remove the placeholder ./aoi_raster/rasters.txt and ./aoi_shp/shp.txt files.
 
-TODO ->
-Add mosaic clip process.
-Replace aoi_raster directory with mkdir usage.
-Look into replacing GeoPandas usage with Rasterio's native s3 I/O.
 
 
